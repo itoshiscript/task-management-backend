@@ -15,7 +15,7 @@ export const index = async (req : Request, res : Response) => {
            return res.status(500).json({
                     status: "error",
                     message: error.message,
-            })
+           })
         }
 
         return res.status(500).json({
