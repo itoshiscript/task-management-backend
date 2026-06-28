@@ -8,10 +8,26 @@ interface CreateTask {
 }
 
 export const createTask = async (newTask: CreateTask) => {
-    const task = await prisma.task.create({data: newTask})
-    return task;
+    return prisma.task.create({data: newTask})
 }
 
 export const getAllTasks = async (userId : number) => {
-    return prisma.task.findMany({where: {userId}});
+    return prisma.task.findMany({
+        where: {
+            userId
+        }, include: {
+            category: true
+        }, orderBy: {
+            createdAt: 'desc'
+        }
+    });
+}
+
+export const getTaskById = async (id: number, userId: number) => {
+    return prisma.task.findFirst({
+        where: {
+            id,
+            userId
+        }
+    })
 }
