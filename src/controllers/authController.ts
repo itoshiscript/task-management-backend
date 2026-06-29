@@ -35,7 +35,7 @@ export const storeUser = async (req: Request, res: Response) => {
             })
         }
 
-        const token = generateToken(result.id, res)
+        generateToken(result.id, res)
 
         return res.status(201).json({
             status: "success",
@@ -85,7 +85,7 @@ export const loginUser = async (req: Request, res: Response) => {
             })
         }
 
-        const token = generateToken(user.id, res)
+        generateToken(user.id, res)
 
         return res.status(200).json({
             status: "success",
@@ -104,5 +104,17 @@ export const loginUser = async (req: Request, res: Response) => {
             message: "Internal Server Error",
         })
     }
+}
+
+export const logoutUser = (req: Request, res: Response) => {
+    res.clearCookie("jwt");
+    return res.status(200).json({
+        status: "success",
+        message: "Logout successful"
+    })
+}
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+    res.json(req.user);
 }
 
