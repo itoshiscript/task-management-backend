@@ -39,8 +39,7 @@ export const storeUser = async (req: Request, res: Response) => {
 
         return res.status(201).json({
             status: "success",
-            data: result,
-            token,
+            data: result
         })
 
     }catch (error : unknown) {
@@ -90,8 +89,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
         return res.status(200).json({
             status: "success",
-            message: "Login successful",
-            token,
+            message: "Login successful"
         })
 
     }catch (error : unknown) {
