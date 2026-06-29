@@ -31,3 +31,20 @@ export const getTaskById = async (id: number, userId: number) => {
         }
     })
 }
+
+export const updateTask = async (id: number, data: Partial<CreateTask>) => {
+    return prisma.task.update({
+        where: {
+            id,
+        },
+        data,
+    })
+}
+
+export const deleteTask = async (id: number) => {
+    return prisma.task.delete({
+        where: {
+            id,
+        }
+    })
+}

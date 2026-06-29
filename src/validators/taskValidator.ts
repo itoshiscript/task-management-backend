@@ -5,3 +5,7 @@ export const taskValidator = z.object({
     description: z.string().max(1000).optional(),
     categoryId: z.coerce.number().optional(),
 });
+
+export const updateTaskValidator = taskValidator.partial().extend({
+    completed: z.boolean().optional(),
+});
