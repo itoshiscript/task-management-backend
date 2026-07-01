@@ -1,118 +1,120 @@
 import { Request, Response } from "express";
-import {findUserEmail, register} from "../models/auth";
+import { findUserEmail, register } from "../models/auth";
 import bcrypt from "bcryptjs";
-import {generateToken} from "../utils/generateToken";
+import { generateToken } from "../utils/generateToken";
 
 export const storeUser = async (req: Request, res: Response) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
         const existingUser = await findUserEmail(email);
 
-        if(existingUser) {
+        if (existingUser) {
             return res.status(400).json({
                 status: "error",
                 message: "User already exists",
-            })
+            });
         }
 
-        if(!email || !password) {
+        if (!email || !password) {
             return res.status(409).json({
                 status: "error",
                 message: "Please provide email and password",
-            })
+            });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const result = await register({email, password: hashedPassword});
+        const result = await register({ email, password: hashedPassword });
 
-        if(!result) {
+        if (!result) {
             return res.status(500).json({
                 status: "error",
                 message: "Failed to create user",
-            })
+            });
         }
 
-        generateToken(result.id, res)
+        generateToken(result.id, res);
 
         return res.status(201).json({
             status: "success",
-            data: result
-        })
-
-    }catch (error : unknown) {
-        if(error instanceof Error) {
+            data: result,
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
             return res.status(500).json({
                 status: "error",
                 message: error.message,
-            })
+            });
         }
         return res.status(500).json({
             status: "error",
             message: "Internal Server Error",
-        })
+        });
     }
-}
+};
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        if(!email || !password) {
+        if (!email || !password) {
             return res.status(400).json({
                 status: "error",
                 message: "Please provide email and password",
-            })
+            });
         }
 
         const user = await findUserEmail(email);
 
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
                 status: "error",
                 message: "User not found",
-            })
+            });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password);
 
-        if(!isMatch) {
+        if (!isMatch) {
             return res.status(401).json({
                 status: "error",
                 message: "Invalid credentials",
-            })
+            });
         }
 
-        generateToken(user.id, res)
+        generateToken(user.id, res);
 
         return res.status(200).json({
             status: "success",
-            message: "Login successful"
-        })
-
-    }catch (error : unknown) {
-        if(error instanceof Error) {
+            message: "Login successful",
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
             return res.status(500).json({
                 status: "error",
                 message: error.message,
-            })
+            });
         }
         return res.status(500).json({
             status: "error",
             message: "Internal Server Error",
-        })
+        });
     }
-}
+};
 
 export const logoutUser = (req: Request, res: Response) => {
-    res.clearCookie("jwt");
+    res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     return res.status(200).json({
         status: "success",
-        message: "Logout successful"
-    })
-}
+        message: "Logout successful",
+    });
+};
 
 export const getCurrentUser = (req: Request, res: Response) => {
     return res.status(200).json({
@@ -120,4 +122,3 @@ export const getCurrentUser = (req: Request, res: Response) => {
         data: req.user,
     });
 };
-
