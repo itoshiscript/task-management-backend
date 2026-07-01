@@ -114,7 +114,10 @@ export const logoutUser = (req: Request, res: Response) => {
     })
 }
 
-export const getCurrentUser = async (req: Request, res: Response) => {
-    res.json(req.user);
-}
+export const getCurrentUser = (req: Request, res: Response) => {
+    return res.status(200).json({
+        status: "success",
+        data: req.user,
+    });
+};
 
