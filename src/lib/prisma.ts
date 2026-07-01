@@ -1,14 +1,18 @@
 import pg from "pg";
-import {PrismaPg} from "@prisma/adapter-pg";
-import {PrismaClient} from "../../generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../generated/prisma/client";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const connectionString = `${process.env.DATABASE_URL}`
+const connectionString = process.env.DATABASE_URL!;
 
-const pool = new pg.Pool({ connectionString })
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({adapter})
+const pool = new pg.Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+});
 
-export { prisma }
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+export { prisma };
